@@ -58,6 +58,40 @@ function computeOutcomes({ investment, discount, lastRoundVal, dilutionFactor, s
 
 const HURDLE = 0.25; // 25% IRR hurdle
 
+/* When one scenario probability moves, distribute the delta equally
+   across the other two so the total always sums to 1.0. Clamped to
+   [0, 1] — if equal split would push an "other" below 0 (or above 1),
+   the residual is absorbed by whichever other still has capacity. */
+function rebalanceProbabilities(scenarios, changedKey, newProb) {
+  const clamped = Math.max(0, Math.min(1, newProb));
+  const others = Object.keys(scenarios).filter((k) => k !== changedKey);
+  const oldOthersSum = others.reduce((s, k) => s + scenarios[k].probability, 0);
+  const newOthersSum = 1 - clamped;
+  const totalDelta = newOthersSum - oldOthersSum;
+  const perOther = totalDelta / others.length;
+
+  const next = { ...scenarios, [changedKey]: { ...scenarios[changedKey], probability: clamped } };
+  let residual = 0;
+  for (const k of others) {
+    const proposed = scenarios[k].probability + perOther;
+    const target = Math.max(0, Math.min(1, proposed));
+    residual += proposed - target;
+    next[k] = { ...scenarios[k], probability: target };
+  }
+
+  if (Math.abs(residual) > 1e-9) {
+    for (const k of others) {
+      const current = next[k].probability;
+      const proposed = current + residual;
+      const target = Math.max(0, Math.min(1, proposed));
+      residual = proposed - target;
+      next[k] = { ...next[k], probability: target };
+      if (Math.abs(residual) < 1e-9) break;
+    }
+  }
+  return next;
+}
+
 /* Integra Groupe brand palette (from corporate deck) */
 const BRAND = {
   pageBg: "#F4F4F4",
@@ -198,7 +232,7 @@ function SectionHeader({ children, num }) {
   );
 }
 
-function ScenarioPanel({ name, label, scenario, onChange, accent }) {
+function ScenarioPanel({ name, label, scenario, onChange, onProbabilityChange, accent }) {
   return (
     <div
       className="space-y-3 p-4 border rounded-sm"
@@ -231,7 +265,7 @@ function ScenarioPanel({ name, label, scenario, onChange, accent }) {
       <Slider
         label="Probability"
         value={scenario.probability}
-        onChange={(v) => onChange({ ...scenario, probability: v })}
+        onChange={(v) => onProbabilityChange(v)}
         min={0}
         max={1}
         step={0.01}
@@ -662,6 +696,7 @@ export default function App() {
                   label="Bad"
                   scenario={scenarios.bad}
                   onChange={(s) => setScenarios({ ...scenarios, bad: s })}
+                  onProbabilityChange={(v) => setScenarios(rebalanceProbabilities(scenarios, "bad", v))}
                   accent={SCENARIO_COLORS.bad}
                 />
                 <ScenarioPanel
@@ -669,6 +704,7 @@ export default function App() {
                   label="Okay"
                   scenario={scenarios.okay}
                   onChange={(s) => setScenarios({ ...scenarios, okay: s })}
+                  onProbabilityChange={(v) => setScenarios(rebalanceProbabilities(scenarios, "okay", v))}
                   accent={SCENARIO_COLORS.okay}
                 />
                 <ScenarioPanel
@@ -676,6 +712,7 @@ export default function App() {
                   label="Great"
                   scenario={scenarios.great}
                   onChange={(s) => setScenarios({ ...scenarios, great: s })}
+                  onProbabilityChange={(v) => setScenarios(rebalanceProbabilities(scenarios, "great", v))}
                   accent={SCENARIO_COLORS.great}
                 />
                 <div
