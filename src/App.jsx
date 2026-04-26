@@ -52,19 +52,65 @@ function computeOutcomes({ investment, discount, lastRoundVal, dilutionFactor, s
 
 const HURDLE = 0.25; // 25% IRR hurdle
 
-const SCENARIO_COLORS = {
-  bad: "#9c4a3c",     // muted rust
-  okay: "#a89060",    // warm taupe
-  great: "#d4a574",   // muted gold
+/* Integra Groupe brand palette (from corporate deck) */
+const BRAND = {
+  pageBg: "#F4F4F4",
+  panelBg: "#EFEFEF",
+  cardBg: "#FFFFFF",
+  border: "#D4D4D4",
+  borderSoft: "#E5E5E5",
+  inkHeadline: "#1F5A6B",   // teal-navy — corporate H1
+  inkSubhead: "#0F2D55",    // dark navy — italic subheaders
+  inkBody: "#333333",
+  inkMuted: "#6B6B6B",
+  inkFaint: "#9A9A9A",
+  teal: "#7FC8BA",          // light teal arrow
+  green: "#2A8A40",          // dark green arrow
+  navy: "#1F5A6B",           // dark navy arrow
+  lime: "#9BCB42",           // light/lime green arrow
 };
+
+const SCENARIO_COLORS = {
+  bad: "#1F5A6B",    // navy — somber baseline
+  okay: "#7FC8BA",   // teal — neutral middle
+  great: "#2A8A40",  // green — positive
+};
+
+function IntegraLogo({ size = 28, className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      className={className}
+      aria-label="Integra Groupe"
+      role="img"
+    >
+      <g strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" fill="none">
+        <path d="M 30 52 L 14 14 L 52 30" stroke="#7FC8BA" />
+        <path d="M 48 30 L 86 14 L 70 52" stroke="#2A8A40" />
+        <path d="M 30 48 L 14 86 L 52 70" stroke="#1F5A6B" />
+        <path d="M 48 70 L 86 86 L 70 48" stroke="#9BCB42" />
+      </g>
+    </svg>
+  );
+}
 
 /* ---------- Tiny UI primitives ---------- */
 function Slider({ label, value, onChange, min, max, step, format, hint }) {
   return (
     <div className="space-y-1">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400">{label}</span>
-        <span className="text-sm font-mono tabular-nums text-stone-100">
+        <span
+          className="text-[11px] uppercase tracking-[0.18em] font-medium"
+          style={{ color: BRAND.inkMuted }}
+        >
+          {label}
+        </span>
+        <span
+          className="text-sm font-mono tabular-nums font-medium"
+          style={{ color: BRAND.inkSubhead }}
+        >
           {format ? format(value) : value}
         </span>
       </div>
@@ -75,9 +121,13 @@ function Slider({ label, value, onChange, min, max, step, format, hint }) {
         step={step}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full accent-amber-200/80 h-1 cursor-pointer"
+        className="w-full h-1 cursor-pointer"
       />
-      {hint && <div className="text-[10px] text-stone-500 leading-tight">{hint}</div>}
+      {hint && (
+        <div className="text-[10px] leading-tight" style={{ color: BRAND.inkFaint }}>
+          {hint}
+        </div>
+      )}
     </div>
   );
 }
@@ -86,18 +136,33 @@ function NumberField({ label, value, onChange, step, format, hint }) {
   return (
     <div className="space-y-1">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400">{label}</span>
+        <span
+          className="text-[11px] uppercase tracking-[0.18em] font-medium"
+          style={{ color: BRAND.inkMuted }}
+        >
+          {label}
+        </span>
       </div>
       <input
         type="number"
         value={value}
         step={step}
         onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full bg-transparent border-b border-stone-700 text-stone-100 font-mono tabular-nums text-sm py-1 focus:outline-none focus:border-amber-200/60"
+        className="w-full bg-transparent border-b font-mono tabular-nums text-sm py-1 focus:outline-none"
+        style={{ color: BRAND.inkSubhead, borderColor: BRAND.border }}
       />
-      {hint && <div className="text-[10px] text-stone-500 leading-tight">{hint}</div>}
+      {hint && (
+        <div className="text-[10px] leading-tight" style={{ color: BRAND.inkFaint }}>
+          {hint}
+        </div>
+      )}
       {format && (
-        <div className="text-[11px] text-stone-400 font-mono tabular-nums">{format(value)}</div>
+        <div
+          className="text-[11px] font-mono tabular-nums"
+          style={{ color: BRAND.inkMuted }}
+        >
+          {format(value)}
+        </div>
       )}
     </div>
   );
@@ -105,11 +170,22 @@ function NumberField({ label, value, onChange, step, format, hint }) {
 
 function SectionHeader({ children, num }) {
   return (
-    <div className="flex items-baseline gap-3 pb-3 mb-4 border-b border-stone-800">
+    <div
+      className="flex items-baseline gap-3 pb-3 mb-4 border-b"
+      style={{ borderColor: BRAND.border }}
+    >
       {num && (
-        <span className="font-mono text-[10px] text-amber-200/70 tabular-nums">{num}</span>
+        <span
+          className="font-mono text-[10px] tabular-nums font-medium"
+          style={{ color: BRAND.inkHeadline }}
+        >
+          {num}
+        </span>
       )}
-      <h3 className="text-[11px] uppercase tracking-[0.22em] text-stone-300 font-medium">
+      <h3
+        className="text-[11px] uppercase tracking-[0.22em] font-semibold"
+        style={{ color: BRAND.inkHeadline }}
+      >
         {children}
       </h3>
     </div>
@@ -118,22 +194,31 @@ function SectionHeader({ children, num }) {
 
 function ScenarioPanel({ name, label, scenario, onChange, accent }) {
   return (
-    <div className="space-y-3 p-4 border border-stone-800 bg-stone-900/30 rounded-sm">
+    <div
+      className="space-y-3 p-4 border rounded-sm"
+      style={{ borderColor: BRAND.border, backgroundColor: BRAND.cardBg }}
+    >
       <div className="flex items-baseline justify-between">
         <div>
           <div
-            className="font-serif text-lg italic"
-            style={{ color: accent, letterSpacing: "0.02em" }}
+            className="text-lg italic font-semibold"
+            style={{ color: accent, letterSpacing: "0.01em" }}
           >
             {label}
           </div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+          <div
+            className="text-[10px] uppercase tracking-[0.18em] font-medium"
+            style={{ color: BRAND.inkMuted }}
+          >
             {name === "bad" && "Photonic moonshot fails"}
             {name === "okay" && "Reaches Quantinuum-tier"}
             {name === "great" && "Utility-scale leader"}
           </div>
         </div>
-        <div className="font-mono text-2xl tabular-nums text-stone-200">
+        <div
+          className="font-mono text-2xl tabular-nums font-medium"
+          style={{ color: BRAND.inkSubhead }}
+        >
           {(scenario.probability * 100).toFixed(0)}%
         </div>
       </div>
@@ -340,55 +425,85 @@ export default function App() {
       className="min-h-screen antialiased"
       style={{
         fontFamily: '"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif',
-        backgroundColor: "#161311",
-        color: "#e7e5e4",
-        backgroundImage:
-          "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212,165,116,0.08), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(156,74,60,0.06), transparent)",
+        backgroundColor: BRAND.pageBg,
+        color: BRAND.inkBody,
       }}
     >
       <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-8 md:py-10">
         {/* Header */}
-        <header className="mb-8 md:mb-12">
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-amber-200/70">
-              Integra Groupe · Investment Committee Memorandum
-            </span>
-            <span className="font-mono text-[10px] text-stone-500">
-              {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
-            </span>
+        <header className="mb-8 md:mb-12 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3">
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.3em]"
+                style={{ color: BRAND.inkHeadline }}
+              >
+                Integra Groupe · Investment Committee Memorandum
+              </span>
+              <span className="font-mono text-[10px]" style={{ color: BRAND.inkFaint }}>
+                {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+              </span>
+            </div>
+            <h1
+              className="text-3xl sm:text-4xl lg:text-5xl font-semibold uppercase leading-tight tracking-tight"
+              style={{ color: BRAND.inkHeadline }}
+            >
+              PsiQuantum{" "}
+              <span style={{ color: BRAND.inkSubhead }}>Secondary</span>
+            </h1>
+            <h2
+              className="text-lg lg:text-xl mt-2"
+              style={{ color: BRAND.inkSubhead }}
+            >
+              Decision <span className="font-semibold">dashboard</span>
+            </h2>
+            <p
+              className="mt-4 max-w-3xl text-sm leading-relaxed"
+              style={{ color: BRAND.inkBody }}
+            >
+              Probability-weighted valuation model for the proposed $5M secondary position in
+              PsiQuantum. Each scenario exit is anchored to a comparable private-market transaction
+              (Xanadu, Quantinuum) or a published market projection (McKinsey QT Monitor). Inputs
+              are adjustable for live sensitivity analysis.
+            </p>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-100 leading-none">
-            PsiQuantum <span className="italic text-amber-200/80">Secondary</span>
-          </h1>
-          <h2 className="font-serif text-xl lg:text-2xl text-stone-400 italic mt-2">
-            Decision dashboard
-          </h2>
-          <p className="mt-4 max-w-3xl text-sm text-stone-400 leading-relaxed">
-            Probability-weighted valuation model for the proposed $5M secondary position in
-            PsiQuantum. Each scenario exit is anchored to a comparable private-market transaction
-            (Xanadu, Quantinuum) or a published market projection (McKinsey QT Monitor). Inputs are
-            adjustable for live sensitivity analysis.
-          </p>
+          <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
+            <IntegraLogo size={48} />
+            <div
+              className="text-[10px] uppercase tracking-[0.18em] font-medium"
+              style={{ color: BRAND.inkSubhead }}
+            >
+              integra <span style={{ color: BRAND.inkFaint, letterSpacing: "0.3em" }}>GROUPE</span>
+            </div>
+          </div>
         </header>
 
         {/* Top row: Verdict and headline metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 md:mb-10">
           {/* Verdict */}
           <div
-            className={`p-5 md:p-6 border ${
-              verdictClears ? "border-amber-200/40" : "border-rose-400/40"
-            } bg-stone-900/40`}
+            className="p-5 md:p-6 border-2 rounded-sm"
+            style={{
+              backgroundColor: BRAND.cardBg,
+              borderColor: verdictClears ? BRAND.green : BRAND.navy,
+            }}
           >
-            <div className="text-[10px] uppercase tracking-[0.22em] text-stone-500 mb-2">
+            <div
+              className="text-[10px] uppercase tracking-[0.22em] mb-2 font-medium"
+              style={{ color: BRAND.inkMuted }}
+            >
               Recommendation
             </div>
             <div
-              className="font-serif text-3xl leading-none"
-              style={{ color: verdictClears ? "#d4a574" : "#c97464" }}
+              className="text-3xl leading-none font-bold tracking-tight"
+              style={{ color: verdictClears ? BRAND.green : BRAND.navy }}
             >
               {verdictClears ? "INVEST" : "PASS"}
             </div>
-            <div className="text-xs text-stone-400 mt-3 leading-relaxed">
+            <div
+              className="text-xs mt-3 leading-relaxed"
+              style={{ color: BRAND.inkBody }}
+            >
               {verdictClears
                 ? `Probability-weighted IRR clears the 25% deep-tech hurdle at a ${(
                     discount * 100
@@ -427,7 +542,20 @@ export default function App() {
                   <button
                     key={p}
                     onClick={() => setScenarios(presets[p])}
-                    className="text-[11px] uppercase tracking-[0.18em] px-3 py-2 border border-stone-800 hover:border-amber-200/60 hover:text-amber-200 text-stone-400 transition-colors"
+                    className="text-[11px] uppercase tracking-[0.18em] font-medium px-3 py-2 border rounded-sm transition-colors"
+                    style={{
+                      borderColor: BRAND.border,
+                      backgroundColor: BRAND.cardBg,
+                      color: BRAND.inkSubhead,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = BRAND.green;
+                      e.currentTarget.style.color = BRAND.green;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = BRAND.border;
+                      e.currentTarget.style.color = BRAND.inkSubhead;
+                    }}
                   >
                     {p}
                   </button>
@@ -527,11 +655,12 @@ export default function App() {
                   accent={SCENARIO_COLORS.great}
                 />
                 <div
-                  className={`text-xs font-mono tabular-nums px-3 py-2 mt-2 border ${
-                    probsValid
-                      ? "border-stone-800 text-stone-500"
-                      : "border-rose-400/40 text-rose-400"
-                  }`}
+                  className="text-xs font-mono tabular-nums px-3 py-2 mt-2 border rounded-sm"
+                  style={{
+                    borderColor: probsValid ? BRAND.border : BRAND.navy,
+                    color: probsValid ? BRAND.inkMuted : BRAND.navy,
+                    backgroundColor: BRAND.cardBg,
+                  }}
                 >
                   Probability sum: {(probSum * 100).toFixed(0)}%{" "}
                   {probsValid ? "✓" : "— must equal 100%"}
@@ -543,9 +672,9 @@ export default function App() {
           {/* RIGHT: outputs and charts */}
           <div className="lg:col-span-8 space-y-8">
             {/* Scenario outcomes chart */}
-            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border rounded-sm" style={{ borderColor: BRAND.border, backgroundColor: BRAND.cardBg }}>
               <SectionHeader num="05">Outcome by scenario</SectionHeader>
-              <div className="text-xs text-stone-400 mb-4 leading-relaxed">
+              <div className="text-xs mb-4 leading-relaxed" style={{ color: BRAND.inkBody }}>
                 Proceeds at exit under each scenario, in millions. The grey dashed line marks the
                 initial position size; the gold dashed line marks the probability-weighted expected
                 proceeds.
@@ -566,18 +695,18 @@ export default function App() {
                   >
                     <XAxis
                       type="number"
-                      stroke="#57534e"
+                      stroke="#9A9A9A"
                       fontSize={11}
                       tickFormatter={(v) => `$${v.toFixed(0)}M`}
                     />
-                    <YAxis dataKey="name" type="category" stroke="#a8a29e" fontSize={12} width={60} />
+                    <YAxis dataKey="name" type="category" stroke="#6B6B6B" fontSize={12} width={60} />
                     <Tooltip
                       contentStyle={{
-                        background: "#0e0c0a",
-                        border: "1px solid #44403c",
+                        background: "#FFFFFF",
+                        border: "1px solid #D4D4D4",
                         fontSize: "12px",
                       }}
-                      labelStyle={{ color: "#d4a574" }}
+                      labelStyle={{ color: "#0F2D55", fontWeight: 600 }}
                       formatter={(v, key, item) => {
                         if (key === "proceeds") return [`$${v.toFixed(1)}M`, "Proceeds"];
                         return [v, key];
@@ -585,24 +714,25 @@ export default function App() {
                     />
                     <ReferenceLine
                       x={investment / 1e6}
-                      stroke="#a8a29e"
+                      stroke="#6B6B6B"
                       strokeDasharray="2 2"
                       label={{
                         value: "Entry $",
                         position: "top",
-                        fill: "#a8a29e",
+                        fill: "#6B6B6B",
                         fontSize: 10,
                       }}
                     />
                     <ReferenceLine
                       x={outcomes.probWeighted / 1e6}
-                      stroke="#d4a574"
+                      stroke="#2A8A40"
                       strokeDasharray="4 2"
                       label={{
                         value: `Avg ${fmt.money(outcomes.probWeighted)}`,
                         position: "top",
-                        fill: "#d4a574",
+                        fill: "#2A8A40",
                         fontSize: 10,
+                        fontWeight: 600,
                       }}
                     />
                     <Bar dataKey="proceeds" radius={0}>
@@ -615,17 +745,23 @@ export default function App() {
               </div>
               <div className="grid grid-cols-3 gap-4 mt-4 text-center">
                 {outcomes.rows.map((r) => (
-                  <div key={r.name} className="border-t border-stone-800 pt-3">
+                  <div key={r.name} className="border-t pt-3" style={{ borderColor: BRAND.border }}>
                     <div
-                      className="font-serif text-2xl tabular-nums"
+                      className="text-2xl tabular-nums font-bold"
                       style={{ color: SCENARIO_COLORS[r.name] }}
                     >
                       {fmt.multi(r.multiple)}
                     </div>
-                    <div className="text-[10px] uppercase tracking-[0.18em] text-stone-500 mt-1">
+                    <div
+                      className="text-[10px] uppercase tracking-[0.18em] mt-1 font-medium"
+                      style={{ color: BRAND.inkMuted }}
+                    >
                       {fmt.pct(r.irr, 0)} IRR
                     </div>
-                    <div className="text-[10px] text-stone-500 mt-1 font-mono tabular-nums">
+                    <div
+                      className="text-[10px] mt-1 font-mono tabular-nums"
+                      style={{ color: BRAND.inkFaint }}
+                    >
                       {(r.probability * 100).toFixed(0)}% probability · {r.years.toFixed(0)} yrs
                     </div>
                   </div>
@@ -634,9 +770,9 @@ export default function App() {
             </div>
 
             {/* Comp comparison */}
-            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border rounded-sm" style={{ borderColor: BRAND.border, backgroundColor: BRAND.cardBg }}>
               <SectionHeader num="06">Comparable transactions · scenarios vs. observed valuations</SectionHeader>
-              <div className="text-xs text-stone-400 mb-4 leading-relaxed">
+              <div className="text-xs mb-4 leading-relaxed" style={{ color: BRAND.inkBody }}>
                 Modeled exit valuations alongside observed comparable transactions. The bad case is
                 anchored to Xanadu's 2022 Series C ($1B); the okay case to Quantinuum's January 2024
                 round ($10B post-money).
@@ -649,21 +785,21 @@ export default function App() {
                   >
                     <XAxis
                       dataKey="name"
-                      stroke="#a8a29e"
+                      stroke="#6B6B6B"
                       fontSize={isMobile ? 9 : 10}
                       angle={isMobile ? -55 : -30}
                       textAnchor="end"
                       interval={0}
                     />
                     <YAxis
-                      stroke="#57534e"
+                      stroke="#9A9A9A"
                       fontSize={11}
                       tickFormatter={(v) => `$${v}B`}
                     />
                     <Tooltip
                       contentStyle={{
-                        background: "#0e0c0a",
-                        border: "1px solid #44403c",
+                        background: "#FFFFFF",
+                        border: "1px solid #D4D4D4",
                         fontSize: "12px",
                       }}
                       formatter={(v) => [`$${v.toFixed(1)}B`, "Valuation"]}
@@ -671,9 +807,9 @@ export default function App() {
                     <Bar dataKey="val" radius={0}>
                       {comps.map((c, i) => {
                         const colorMap = {
-                          comp: "#57534e",
-                          anchor: "#a8a29e",
-                          you: "#d4a574",
+                          comp: "#9A9A9A",
+                          anchor: "#6B6B6B",
+                          you: BRAND.lime,
                           bad: SCENARIO_COLORS.bad,
                           okay: SCENARIO_COLORS.okay,
                           great: SCENARIO_COLORS.great,
@@ -687,9 +823,9 @@ export default function App() {
             </div>
 
             {/* Discount sensitivity */}
-            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border rounded-sm" style={{ borderColor: BRAND.border, backgroundColor: BRAND.cardBg }}>
               <SectionHeader num="07">Discount sensitivity</SectionHeader>
-              <div className="text-xs text-stone-400 mb-4 leading-relaxed">
+              <div className="text-xs mb-4 leading-relaxed" style={{ color: BRAND.inkBody }}>
                 Probability-weighted IRR across the discount range. The vertical guide marks the
                 modeled discount; the horizontal reference line is the 25% deep-tech hurdle.
               </div>
@@ -698,39 +834,39 @@ export default function App() {
                   <LineChart data={discountSensitivity} margin={{ top: 5, right: 30, bottom: 20, left: 20 }}>
                     <XAxis
                       dataKey="discountLabel"
-                      stroke="#a8a29e"
+                      stroke="#6B6B6B"
                       fontSize={11}
                     />
                     <YAxis
-                      stroke="#57534e"
+                      stroke="#9A9A9A"
                       fontSize={11}
                       tickFormatter={(v) => `${v.toFixed(0)}%`}
                     />
                     <Tooltip
                       contentStyle={{
-                        background: "#0e0c0a",
-                        border: "1px solid #44403c",
+                        background: "#FFFFFF",
+                        border: "1px solid #D4D4D4",
                         fontSize: "12px",
                       }}
                       formatter={(v) => [`${v.toFixed(1)}%`, "IRR"]}
                     />
                     <ReferenceLine
                       y={25}
-                      stroke="#9c4a3c"
+                      stroke="#1F5A6B"
                       strokeDasharray="4 2"
-                      label={{ value: "25% hurdle", position: "right", fill: "#9c4a3c", fontSize: 10 }}
+                      label={{ value: "25% hurdle", position: "right", fill: "#1F5A6B", fontSize: 10, fontWeight: 600 }}
                     />
                     <ReferenceLine
                       x={`${(discount * 100).toFixed(0)}%`}
-                      stroke="#d4a574"
+                      stroke="#9BCB42"
                       strokeDasharray="2 2"
                     />
                     <Line
                       type="monotone"
                       dataKey="irrPct"
-                      stroke="#d4a574"
-                      strokeWidth={2}
-                      dot={{ r: 3, fill: "#d4a574" }}
+                      stroke="#2A8A40"
+                      strokeWidth={2.5}
+                      dot={{ r: 3, fill: "#2A8A40" }}
                       activeDot={{ r: 5 }}
                     />
                   </LineChart>
@@ -739,9 +875,9 @@ export default function App() {
             </div>
 
             {/* Tornado / sensitivity */}
-            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border rounded-sm" style={{ borderColor: BRAND.border, backgroundColor: BRAND.cardBg }}>
               <SectionHeader num="08">Sensitivity analysis</SectionHeader>
-              <div className="text-xs text-stone-400 mb-4 leading-relaxed">
+              <div className="text-xs mb-4 leading-relaxed" style={{ color: BRAND.inkBody }}>
                 IRR delta when each input is swung between a low and high bound, all other inputs
                 held constant. Inputs are sorted by impact magnitude; wider bars indicate the
                 assumptions to which the recommendation is most sensitive.
@@ -752,7 +888,12 @@ export default function App() {
                   const scale = (v) => (Math.abs(v) / maxRange) * 50;
                   return (
                     <div key={t.label} className="grid grid-cols-12 gap-2 items-center text-xs">
-                      <div className="col-span-5 sm:col-span-4 text-stone-300 font-mono text-[10px] sm:text-xs leading-tight">{t.label}</div>
+                      <div
+                        className="col-span-5 sm:col-span-4 font-mono text-[10px] sm:text-xs leading-tight font-medium"
+                        style={{ color: BRAND.inkSubhead }}
+                      >
+                        {t.label}
+                      </div>
                       <div className="col-span-7 sm:col-span-8 relative h-6 flex items-center">
                         <div className="w-1/2 flex justify-end">
                           {t.low < 0 && (
@@ -760,28 +901,34 @@ export default function App() {
                               className="h-4"
                               style={{
                                 width: `${scale(t.low)}%`,
-                                background: "#9c4a3c",
+                                background: BRAND.navy,
                               }}
                             />
                           )}
                         </div>
-                        <div className="w-px h-6 bg-stone-600" />
+                        <div className="w-px h-6" style={{ background: BRAND.inkFaint }} />
                         <div className="w-1/2">
                           {t.high > 0 && (
                             <div
                               className="h-4"
                               style={{
                                 width: `${scale(t.high)}%`,
-                                background: "#d4a574",
+                                background: BRAND.green,
                               }}
                             />
                           )}
                         </div>
-                        <span className="absolute left-2 text-[10px] text-stone-500 font-mono tabular-nums">
+                        <span
+                          className="absolute left-2 text-[10px] font-mono tabular-nums"
+                          style={{ color: BRAND.inkMuted }}
+                        >
                           {t.low > 0 ? "+" : ""}
                           {t.low.toFixed(1)}%
                         </span>
-                        <span className="absolute right-2 text-[10px] text-stone-500 font-mono tabular-nums">
+                        <span
+                          className="absolute right-2 text-[10px] font-mono tabular-nums"
+                          style={{ color: BRAND.inkMuted }}
+                        >
                           {t.high > 0 ? "+" : ""}
                           {t.high.toFixed(1)}%
                         </span>
@@ -790,7 +937,10 @@ export default function App() {
                   );
                 })}
               </div>
-              <div className="text-[10px] text-stone-500 mt-3 italic">
+              <div
+                className="text-[10px] mt-3 italic"
+                style={{ color: BRAND.inkFaint }}
+              >
                 IRR delta from base case · sorted by magnitude · downside left, upside right
               </div>
             </div>
@@ -798,9 +948,18 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-16 pt-8 border-t border-stone-800">
-          <div className="flex justify-between items-baseline text-[10px] text-stone-500 font-mono uppercase tracking-[0.2em]">
-            <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
+        <footer
+          className="mt-16 pt-8 border-t"
+          style={{ borderColor: BRAND.border }}
+        >
+          <div
+            className="flex flex-wrap justify-between items-center gap-4 text-[10px] font-mono uppercase tracking-[0.2em]"
+            style={{ color: BRAND.inkMuted }}
+          >
+            <div className="flex items-center gap-3">
+              <IntegraLogo size={20} />
+              <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
+            </div>
             <span>Prepared for Integra Groupe · Investment Analyst Assessment</span>
           </div>
         </footer>
@@ -812,20 +971,32 @@ export default function App() {
 function Metric({ label, value, subValue, highlight }) {
   return (
     <div
-      className={`p-5 md:p-6 border bg-stone-900/40 ${
-        highlight ? "border-amber-200/30" : "border-stone-800"
-      }`}
+      className="p-5 md:p-6 border rounded-sm"
+      style={{
+        backgroundColor: BRAND.cardBg,
+        borderColor: highlight ? BRAND.green : BRAND.border,
+        borderWidth: highlight ? 2 : 1,
+      }}
     >
-      <div className="text-[10px] uppercase tracking-[0.22em] text-stone-500 mb-2">{label}</div>
       <div
-        className={`font-serif text-3xl tabular-nums leading-none ${
-          highlight ? "text-amber-200" : "text-stone-100"
-        }`}
+        className="text-[10px] uppercase tracking-[0.22em] mb-2 font-medium"
+        style={{ color: BRAND.inkMuted }}
+      >
+        {label}
+      </div>
+      <div
+        className="text-3xl tabular-nums leading-none font-bold tracking-tight"
+        style={{ color: highlight ? BRAND.green : BRAND.inkSubhead }}
       >
         {value}
       </div>
       {subValue && (
-        <div className="text-[11px] text-stone-500 mt-3 font-mono tabular-nums">{subValue}</div>
+        <div
+          className="text-[11px] mt-3 font-mono tabular-nums"
+          style={{ color: BRAND.inkMuted }}
+        >
+          {subValue}
+        </div>
       )}
     </div>
   );

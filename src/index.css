@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,20 +7,20 @@
 html, body, #root {
   margin: 0;
   padding: 0;
-  background-color: #161311;
-  color: #e7e5e4;
+  background-color: #F4F4F4;
+  color: #333333;
   font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   min-height: 100vh;
 }
 
-.font-serif { font-family: 'Fraunces', Georgia, serif; }
+.font-serif { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; font-weight: 600; letter-spacing: -0.01em; }
 .font-sans  { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; }
 .font-mono  { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
 
 input[type=range] {
   -webkit-appearance: none;
   appearance: none;
-  background: #2a2520;
+  background: #D4D4D4;
   border-radius: 9999px;
   height: 4px;
 }
@@ -29,14 +29,16 @@ input[type=range]::-webkit-slider-thumb {
   appearance: none;
   width: 14px; height: 14px;
   border-radius: 50%;
-  background: #d4a574;
+  background: #1F5A6B;
   cursor: pointer;
-  border: 2px solid #161311;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 0 1px #1F5A6B;
 }
 input[type=range]::-moz-range-thumb {
   width: 14px; height: 14px;
   border-radius: 50%;
-  background: #d4a574;
+  background: #1F5A6B;
   cursor: pointer;
-  border: 2px solid #161311;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 0 1px #1F5A6B;
 }
