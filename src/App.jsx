@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -168,8 +168,22 @@ function ScenarioPanel({ name, label, scenario, onChange, accent }) {
   );
 }
 
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 /* ---------- Main component ---------- */
 export default function App() {
+  const isMobile = useIsMobile();
+
   // Deal terms
   const [investment, setInvestment] = useState(5_000_000);
   const [discount, setDiscount] = useState(0.20);
@@ -332,10 +346,10 @@ export default function App() {
           "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212,165,116,0.08), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(156,74,60,0.06), transparent)",
       }}
     >
-      <div className="max-w-[1400px] mx-auto px-8 py-10">
+      <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-8 md:py-10">
         {/* Header */}
-        <header className="mb-12">
-          <div className="flex items-baseline gap-4 mb-2">
+        <header className="mb-8 md:mb-12">
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-amber-200/70">
               Integra Groupe · Investment Committee Memorandum
             </span>
@@ -343,10 +357,10 @@ export default function App() {
               {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
             </span>
           </div>
-          <h1 className="font-serif text-5xl text-stone-100 leading-none">
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-stone-100 leading-none">
             PsiQuantum <span className="italic text-amber-200/80">Secondary</span>
           </h1>
-          <h2 className="font-serif text-2xl text-stone-400 italic mt-2">
+          <h2 className="font-serif text-xl lg:text-2xl text-stone-400 italic mt-2">
             Decision dashboard
           </h2>
           <p className="mt-4 max-w-3xl text-sm text-stone-400 leading-relaxed">
@@ -357,11 +371,11 @@ export default function App() {
           </p>
         </header>
 
-        {/* Top row: Verdict and headline metrics — 3 + 3 + 3 + 3 = 12 */}
-        <div className="grid grid-cols-12 gap-4 mb-10">
+        {/* Top row: Verdict and headline metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 md:mb-10">
           {/* Verdict */}
           <div
-            className={`col-span-3 p-6 border ${
+            className={`p-5 md:p-6 border ${
               verdictClears ? "border-amber-200/40" : "border-rose-400/40"
             } bg-stone-900/40`}
           >
@@ -401,10 +415,10 @@ export default function App() {
           />
         </div>
 
-        {/* Main 12-col layout */}
-        <div className="grid grid-cols-12 gap-6">
+        {/* Main layout — stacks on mobile, splits 4/8 from lg */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* LEFT: inputs */}
-          <div className="col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-8">
             {/* Presets */}
             <div>
               <SectionHeader num="01">Presets</SectionHeader>
@@ -527,9 +541,9 @@ export default function App() {
           </div>
 
           {/* RIGHT: outputs and charts */}
-          <div className="col-span-8 space-y-8">
+          <div className="lg:col-span-8 space-y-8">
             {/* Scenario outcomes chart */}
-            <div className="p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="05">Outcome by scenario</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
                 Proceeds at exit under each scenario, in millions. The grey dashed line marks the
@@ -620,24 +634,24 @@ export default function App() {
             </div>
 
             {/* Comp comparison */}
-            <div className="p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="06">Comparable transactions · scenarios vs. observed valuations</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
                 Modeled exit valuations alongside observed comparable transactions. The bad case is
                 anchored to Xanadu's 2022 Series C ($1B); the okay case to Quantinuum's January 2024
                 round ($10B post-money).
               </div>
-              <div className="h-[260px]">
+              <div className="h-[260px] sm:h-[260px]">
                 <ResponsiveContainer>
                   <BarChart
                     data={comps}
-                    margin={{ top: 5, right: 20, bottom: 60, left: 30 }}
+                    margin={{ top: 5, right: 10, bottom: isMobile ? 80 : 60, left: 20 }}
                   >
                     <XAxis
                       dataKey="name"
                       stroke="#a8a29e"
-                      fontSize={10}
-                      angle={-30}
+                      fontSize={isMobile ? 9 : 10}
+                      angle={isMobile ? -55 : -30}
                       textAnchor="end"
                       interval={0}
                     />
@@ -673,7 +687,7 @@ export default function App() {
             </div>
 
             {/* Discount sensitivity */}
-            <div className="p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="07">Discount sensitivity</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
                 Probability-weighted IRR across the discount range. The vertical guide marks the
@@ -725,7 +739,7 @@ export default function App() {
             </div>
 
             {/* Tornado / sensitivity */}
-            <div className="p-6 border border-stone-800 bg-stone-900/30">
+            <div className="p-4 md:p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="08">Sensitivity analysis</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
                 IRR delta when each input is swung between a low and high bound, all other inputs
@@ -738,8 +752,8 @@ export default function App() {
                   const scale = (v) => (Math.abs(v) / maxRange) * 50;
                   return (
                     <div key={t.label} className="grid grid-cols-12 gap-2 items-center text-xs">
-                      <div className="col-span-4 text-stone-300 font-mono">{t.label}</div>
-                      <div className="col-span-8 relative h-6 flex items-center">
+                      <div className="col-span-5 sm:col-span-4 text-stone-300 font-mono text-[10px] sm:text-xs leading-tight">{t.label}</div>
+                      <div className="col-span-7 sm:col-span-8 relative h-6 flex items-center">
                         <div className="w-1/2 flex justify-end">
                           {t.low < 0 && (
                             <div
@@ -798,7 +812,7 @@ export default function App() {
 function Metric({ label, value, subValue, highlight }) {
   return (
     <div
-      className={`col-span-3 p-6 border bg-stone-900/40 ${
+      className={`p-5 md:p-6 border bg-stone-900/40 ${
         highlight ? "border-amber-200/30" : "border-stone-800"
       }`}
     >
