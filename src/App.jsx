@@ -47,7 +47,13 @@ function computeOutcomes({ investment, discount, lastRoundVal, dilutionFactor, s
   const wMultiple = probWeighted / investment;
   const wYears = rows.reduce((acc, r) => acc + r.probability * r.years, 0);
   const wIrr = Math.pow(probWeighted / investment, 1 / wYears) - 1;
-  return { entryVal, startOwn, exitOwn, rows, probWeighted, wMultiple, wIrr, wYears };
+  const wExitYear = rows.reduce((acc, r) => acc + r.probability * r.exitYear, 0);
+  const wExitValuationB = rows.reduce((acc, r) => acc + r.probability * r.exitValuationB, 0);
+  return {
+    entryVal, startOwn, exitOwn, rows,
+    probWeighted, wMultiple, wIrr, wYears,
+    wExitYear, wExitValuationB,
+  };
 }
 
 const HURDLE = 0.25; // 25% IRR hurdle
@@ -521,7 +527,16 @@ export default function App() {
           <Metric
             label="Expected proceeds"
             value={fmt.money(outcomes.probWeighted)}
-            subValue={`on $${(investment / 1e6).toFixed(1)}M deployed`}
+            subValue={
+              <>
+                <div>
+                  ~{Math.round(outcomes.wExitYear)} · ${outcomes.wExitValuationB.toFixed(1)}B implied exit
+                </div>
+                <div className="mt-1" style={{ color: BRAND.inkFaint }}>
+                  on ${(investment / 1e6).toFixed(1)}M deployed
+                </div>
+              </>
+            }
           />
           <Metric
             label="Implied entry valuation"
