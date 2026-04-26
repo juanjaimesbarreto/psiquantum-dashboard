@@ -463,6 +463,15 @@ export default function App() {
             >
               Decision <span className="font-semibold">dashboard</span>
             </h2>
+            <div
+              className="mt-3 text-sm italic font-semibold"
+              style={{ color: BRAND.inkHeadline }}
+            >
+              Juan Pablo Jaimes
+              <span className="font-normal not-italic" style={{ color: BRAND.inkMuted }}>
+                {" · Investment Analyst"}
+              </span>
+            </div>
             <p
               className="mt-4 max-w-3xl text-sm leading-relaxed"
               style={{ color: BRAND.inkBody }}
@@ -968,14 +977,21 @@ export default function App() {
           style={{ borderColor: BRAND.border }}
         >
           <div
-            className="flex flex-wrap justify-between items-center gap-4 text-[10px] font-mono uppercase tracking-[0.2em]"
+            className="flex flex-wrap justify-between items-start gap-4 text-[10px] font-mono uppercase tracking-[0.2em]"
             style={{ color: BRAND.inkMuted }}
           >
             <div className="flex items-center gap-3">
               <IntegraLogo size={20} />
               <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
             </div>
-            <span>Prepared for Integra Groupe · Investment Analyst Assessment</span>
+            <div className="text-right space-y-1">
+              <div className="font-semibold" style={{ color: BRAND.inkHeadline }}>
+                Juan Pablo Jaimes · Investment Analyst
+              </div>
+              <div style={{ color: BRAND.inkFaint }}>
+                Prepared for Integra Groupe Assessment
+              </div>
+            </div>
           </div>
         </footer>
       </div>
