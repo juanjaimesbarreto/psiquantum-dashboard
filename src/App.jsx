@@ -259,7 +259,7 @@ export default function App() {
   const comps = [
     { name: "Xanadu (2022)", val: 1.0, kind: "comp" },
     { name: "PsiQuantum (Mar 2025)", val: 6.0, kind: "anchor" },
-    { name: "Your entry", val: outcomes.entryVal / 1e9, kind: "you" },
+    { name: "Modeled entry", val: outcomes.entryVal / 1e9, kind: "you" },
     { name: "PsiQuantum (Sep 2025)", val: 7.0, kind: "comp" },
     { name: "Quantinuum (Jan 2024)", val: 10.0, kind: "comp" },
     { name: "Bad exit", val: scenarios.bad.exitValuationB, kind: "bad" },
@@ -337,10 +337,10 @@ export default function App() {
         <header className="mb-12">
           <div className="flex items-baseline gap-4 mb-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-amber-200/70">
-              Integra Groupe · Investment Memo Tool
+              Integra Groupe · Investment Committee Memorandum
             </span>
             <span className="font-mono text-[10px] text-stone-500">
-              v3 · {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+              {new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
             </span>
           </div>
           <h1 className="font-serif text-5xl text-stone-100 leading-none">
@@ -350,8 +350,10 @@ export default function App() {
             Decision dashboard
           </h2>
           <p className="mt-4 max-w-3xl text-sm text-stone-400 leading-relaxed">
-            Adjust assumptions on the left. Outputs update live. Each scenario is anchored to a real
-            comparable transaction (Xanadu, Quantinuum) to make every number defensible in the room.
+            Probability-weighted valuation model for the proposed $5M secondary position in
+            PsiQuantum. Each scenario exit is anchored to a comparable private-market transaction
+            (Xanadu, Quantinuum) or a published market projection (McKinsey QT Monitor). Inputs are
+            adjustable for live sensitivity analysis.
           </p>
         </header>
 
@@ -374,10 +376,10 @@ export default function App() {
             </div>
             <div className="text-xs text-stone-400 mt-3 leading-relaxed">
               {verdictClears
-                ? `Probability-weighted IRR clears the 25% hurdle. Counter at ${(
+                ? `Probability-weighted IRR clears the 25% deep-tech hurdle at a ${(
                     discount * 100
-                  ).toFixed(0)}% discount.`
-                : `IRR misses 25% hurdle. Push for deeper discount or pass.`}
+                  ).toFixed(0)}% discount to the last primary round.`
+                : `Probability-weighted IRR falls short of the 25% hurdle at the modeled discount.`}
             </div>
           </div>
 
@@ -390,12 +392,12 @@ export default function App() {
           <Metric
             label="Expected proceeds"
             value={fmt.money(outcomes.probWeighted)}
-            subValue={`from $${(investment / 1e6).toFixed(1)}M invested`}
+            subValue={`on $${(investment / 1e6).toFixed(1)}M deployed`}
           />
           <Metric
-            label="Entry valuation"
+            label="Implied entry valuation"
             value={fmt.moneyB(outcomes.entryVal / 1e9)}
-            subValue={`${fmt.pct(discount, 0)} below last round`}
+            subValue={`${fmt.pct(discount, 0)} below last primary round`}
           />
         </div>
 
@@ -424,14 +426,14 @@ export default function App() {
               <SectionHeader num="02">Deal terms</SectionHeader>
               <div className="space-y-5">
                 <Slider
-                  label="Investment"
+                  label="Position size"
                   value={investment}
                   onChange={setInvestment}
                   min={1_000_000}
                   max={20_000_000}
                   step={500_000}
                   format={fmt.money}
-                  hint="Brokered position size"
+                  hint="Position offered by the broker"
                 />
                 <Slider
                   label="Discount to last round"
@@ -441,7 +443,7 @@ export default function App() {
                   max={0.40}
                   step={0.01}
                   format={(v) => `${(v * 100).toFixed(0)}%`}
-                  hint="Broker offered 15-20%; counter at 20%+"
+                  hint="Broker quoted range: 15–20%"
                 />
                 <Slider
                   label="Last round valuation"
@@ -451,7 +453,7 @@ export default function App() {
                   max={10e9}
                   step={0.25e9}
                   format={(v) => fmt.moneyB(v / 1e9)}
-                  hint="March 2025 round was $6B pre-money"
+                  hint="March 2025 Series E: $6B pre-money"
                 />
               </div>
             </div>
@@ -461,14 +463,14 @@ export default function App() {
               <SectionHeader num="03">Capital structure</SectionHeader>
               <div className="space-y-5">
                 <Slider
-                  label="Government funding"
+                  label="Non-dilutive government funding"
                   value={govFunding}
                   onChange={setGovFunding}
                   min={0}
                   max={2.0}
                   step={0.1}
                   format={(v) => `$${v.toFixed(1)}B`}
-                  hint={`Per teaser: ~$1B (Australia + Illinois). Suggests dilution factor ${suggestedDilution.toFixed(
+                  hint={`Investment teaser: ~$1B committed (Australia + Illinois). Implied dilution factor: ${suggestedDilution.toFixed(
                     2
                   )}.`}
                 />
@@ -480,7 +482,7 @@ export default function App() {
                   max={1.0}
                   step={0.01}
                   format={(v) => v.toFixed(2)}
-                  hint={`% of starting ownership retained at exit. More gov $$ → higher.`}
+                  hint="Share of starting ownership retained at exit. Higher non-dilutive funding implies a higher factor."
                 />
               </div>
             </div>
@@ -517,8 +519,8 @@ export default function App() {
                       : "border-rose-400/40 text-rose-400"
                   }`}
                 >
-                  Probabilities sum: {(probSum * 100).toFixed(0)}%{" "}
-                  {probsValid ? "✓" : "← must equal 100%"}
+                  Probability sum: {(probSum * 100).toFixed(0)}%{" "}
+                  {probsValid ? "✓" : "— must equal 100%"}
                 </div>
               </div>
             </div>
@@ -530,8 +532,9 @@ export default function App() {
             <div className="p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="05">Outcome by scenario</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
-                Each bar is what your $5M investment becomes in that scenario. The dotted line is the
-                probability-weighted average. The faded zone is your initial investment.
+                Proceeds at exit under each scenario, in millions. The grey dashed line marks the
+                initial position size; the gold dashed line marks the probability-weighted expected
+                proceeds.
               </div>
               <div className="h-[260px]">
                 <ResponsiveContainer>
@@ -606,10 +609,10 @@ export default function App() {
                       {fmt.multi(r.multiple)}
                     </div>
                     <div className="text-[10px] uppercase tracking-[0.18em] text-stone-500 mt-1">
-                      {fmt.pct(r.irr, 0)} per year
+                      {fmt.pct(r.irr, 0)} IRR
                     </div>
                     <div className="text-[10px] text-stone-500 mt-1 font-mono tabular-nums">
-                      {(r.probability * 100).toFixed(0)}% odds · {r.years.toFixed(0)} yrs
+                      {(r.probability * 100).toFixed(0)}% probability · {r.years.toFixed(0)} yrs
                     </div>
                   </div>
                 ))}
@@ -618,10 +621,11 @@ export default function App() {
 
             {/* Comp comparison */}
             <div className="p-6 border border-stone-800 bg-stone-900/30">
-              <SectionHeader num="06">Comp benchmark · scenarios next to real prices</SectionHeader>
+              <SectionHeader num="06">Comparable transactions · scenarios vs. observed valuations</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
-                Where each scenario's exit valuation lands relative to current quantum company comps.
-                The bad case should be defensible vs. Xanadu; the okay case vs. Quantinuum.
+                Modeled exit valuations alongside observed comparable transactions. The bad case is
+                anchored to Xanadu's 2022 Series C ($1B); the okay case to Quantinuum's January 2024
+                round ($10B post-money).
               </div>
               <div className="h-[260px]">
                 <ResponsiveContainer>
@@ -672,8 +676,8 @@ export default function App() {
             <div className="p-6 border border-stone-800 bg-stone-900/30">
               <SectionHeader num="07">Discount sensitivity</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
-                What's your IRR at different discount levels? The orange dot is your current ask. The
-                horizontal line is the 25% hurdle. Use this to negotiate with the broker.
+                Probability-weighted IRR across the discount range. The vertical guide marks the
+                modeled discount; the horizontal reference line is the 25% deep-tech hurdle.
               </div>
               <div className="h-[220px]">
                 <ResponsiveContainer>
@@ -722,11 +726,11 @@ export default function App() {
 
             {/* Tornado / sensitivity */}
             <div className="p-6 border border-stone-800 bg-stone-900/30">
-              <SectionHeader num="08">What moves the needle most</SectionHeader>
+              <SectionHeader num="08">Sensitivity analysis</SectionHeader>
               <div className="text-xs text-stone-400 mb-4 leading-relaxed">
-                Each row tests how much your IRR moves when one assumption swings between a low and
-                high value (everything else held constant). Wider bar = more important assumption to
-                defend in the interview.
+                IRR delta when each input is swung between a low and high bound, all other inputs
+                held constant. Inputs are sorted by impact magnitude; wider bars indicate the
+                assumptions to which the recommendation is most sensitive.
               </div>
               <div className="space-y-2">
                 {tornadoData.map((t) => {
@@ -773,55 +777,7 @@ export default function App() {
                 })}
               </div>
               <div className="text-[10px] text-stone-500 mt-3 italic">
-                IRR delta from base case · sorted by magnitude · negative left, positive right
-              </div>
-            </div>
-
-            {/* Talking points */}
-            <div className="p-6 border border-stone-800 bg-stone-900/30">
-              <SectionHeader num="09">Defense in the room</SectionHeader>
-              <div className="space-y-4 text-sm leading-relaxed">
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1">
-                    Why the bad case is {fmt.moneyB(scenarios.bad.exitValuationB)}, not zero
-                  </div>
-                  <div className="text-stone-300">
-                    "Anchored to Xanadu's 2022 valuation of $1B. PsiQuantum's 230+ patents, photonic IP,
-                    and GlobalFoundries relationship retain acquisition value even if the photonic
-                    moonshot fails."
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1">
-                    Why the okay case is {fmt.moneyB(scenarios.okay.exitValuationB)}
-                  </div>
-                  <div className="text-stone-300">
-                    "Quantinuum is at $10B today with real revenue. PsiQuantum reaching parity over 5
-                    years and earning a premium for greater ambition supports{" "}
-                    {fmt.moneyB(scenarios.okay.exitValuationB)} via a hyperscaler acquisition or IPO."
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1">
-                    Why the great case is {fmt.moneyB(scenarios.great.exitValuationB)}
-                  </div>
-                  <div className="text-stone-300">
-                    "McKinsey's optimistic 2035 quantum computing market is $72B in revenue. With ~25%
-                    market share and 10x revenue multiple, PsiQuantum reaches{" "}
-                    {fmt.moneyB(scenarios.great.exitValuationB)}. Requires execution against IBM/Google
-                    in superconducting and Atom Computing in neutral atoms."
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-stone-500 mb-1">
-                    Strategic fit for Integra
-                  </div>
-                  <div className="text-stone-300">
-                    "Integra has already deployed into Anthropic and Neuralink via SPVs. PsiQuantum is
-                    the same playbook: late-stage deep-tech trophy access for HNWI/family-office LPs.
-                    $5M check size matches their pattern."
-                  </div>
-                </div>
+                IRR delta from base case · sorted by magnitude · downside left, upside right
               </div>
             </div>
           </div>
@@ -830,8 +786,8 @@ export default function App() {
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t border-stone-800">
           <div className="flex justify-between items-baseline text-[10px] text-stone-500 font-mono uppercase tracking-[0.2em]">
-            <span>Comp anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
-            <span>Drag any slider to test sensitivity</span>
+            <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
+            <span>Prepared for Integra Groupe · Investment Analyst Assessment</span>
           </div>
         </footer>
       </div>
