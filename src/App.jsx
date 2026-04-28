@@ -313,9 +313,15 @@ export default function App() {
   const [investment, setInvestment] = useState(5_000_000);
   const [discount, setDiscount] = useState(0.20);
   const [lastRoundVal, setLastRoundVal] = useState(6_000_000_000);
+  const [entryAnchor, setEntryAnchor] = useState("march2025"); // "march2025" | "sep2025"
   const [govFunding, setGovFunding] = useState(1.0); // in $B
   const [dilutionFactor, setDilutionFactor] = useState(0.85);
   const entryYear = 2025;
+
+  function selectEntryAnchor(anchor) {
+    setEntryAnchor(anchor);
+    setLastRoundVal(anchor === "sep2025" ? 7_000_000_000 : 6_000_000_000);
+  }
 
   // Scenarios
   const [scenarios, setScenarios] = useState({
@@ -399,8 +405,8 @@ export default function App() {
     { name: "Xanadu (2022)", val: 1.0, kind: "comp" },
     { name: "PsiQuantum (Mar 2025)", val: 6.0, kind: "anchor" },
     { name: "Modeled entry", val: outcomes.entryVal / 1e9, kind: "you" },
-    { name: "PsiQuantum (Sep 2025)", val: 7.0, kind: "comp" },
-    { name: "Quantinuum (Jan 2024)", val: 10.0, kind: "comp" },
+    { name: "PsiQuantum (Sep 2025, post-case)", val: 7.0, kind: "anchor" },
+    { name: "Quantinuum (Jan 2025)", val: 10.0, kind: "comp" },
     { name: "Bad exit", val: scenarios.bad.exitValuationB, kind: "bad" },
     { name: "Okay exit", val: scenarios.okay.exitValuationB, kind: "okay" },
     { name: "Great exit", val: scenarios.great.exitValuationB, kind: "great" },
@@ -645,6 +651,44 @@ export default function App() {
                   format={(v) => `${(v * 100).toFixed(0)}%`}
                   hint="Broker quoted range: 15–20%"
                 />
+                <div className="space-y-2">
+                  <div
+                    className="text-[11px] uppercase tracking-[0.18em] font-medium"
+                    style={{ color: BRAND.inkMuted }}
+                  >
+                    Entry-round anchor
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: "march2025", label: "Mar 2025 · $6B pre", sub: "Primary anchor" },
+                      { id: "sep2025", label: "Sep 2025 · $7B post", sub: "Post-case stress test" },
+                    ].map((opt) => {
+                      const active = entryAnchor === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => selectEntryAnchor(opt.id)}
+                          className="text-left px-3 py-2 border rounded-sm transition-colors"
+                          style={{
+                            borderColor: active ? BRAND.green : BRAND.border,
+                            backgroundColor: active ? "#F0F8F2" : BRAND.cardBg,
+                            color: active ? BRAND.green : BRAND.inkSubhead,
+                          }}
+                        >
+                          <div className="text-[11px] font-semibold tracking-tight">
+                            {opt.label}
+                          </div>
+                          <div
+                            className="text-[10px] mt-0.5"
+                            style={{ color: active ? BRAND.green : BRAND.inkFaint }}
+                          >
+                            {opt.sub}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
                 <Slider
                   label="Last round valuation"
                   value={lastRoundVal}
@@ -653,7 +697,11 @@ export default function App() {
                   max={10e9}
                   step={0.25e9}
                   format={(v) => fmt.moneyB(v / 1e9)}
-                  hint="March 2025 Series E: $6B pre-money"
+                  hint={
+                    entryAnchor === "sep2025"
+                      ? "Sep 2025 round: $7B post-money (post-case validation)"
+                      : "March 2025 Series E: $6B pre-money"
+                  }
                 />
               </div>
             </div>
@@ -835,7 +883,7 @@ export default function App() {
               <SectionHeader num="06">Comparable transactions · scenarios vs. observed valuations</SectionHeader>
               <div className="text-xs mb-4 leading-relaxed" style={{ color: BRAND.inkBody }}>
                 Modeled exit valuations alongside observed comparable transactions. The bad case is
-                anchored to Xanadu's 2022 Series C ($1B); the okay case to Quantinuum's January 2024
+                anchored to Xanadu's 2022 Series C ($1B); the okay case to Quantinuum's January 2025
                 round ($10B post-money).
               </div>
               <div className="h-[260px] sm:h-[260px]">

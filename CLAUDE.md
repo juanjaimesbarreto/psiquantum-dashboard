@@ -50,11 +50,11 @@ A US-based quantum computing company building a fault-tolerant quantum computer 
 
 - Founded 2016 by Jeremy O'Brien and others (UK academic origin)
 - HQ Palo Alto; manufacturing partnership with GlobalFoundries on 300mm CMOS line
-- Total private funding: ~$2.3B+ (largest single quantum company by capital raised)
+- Total private funding: ~$2.3B+ (largest single quantum company by capital raised; predominantly deployed into R&D given the absence of revenue products)
 - Last priced round: March 2025 Series E at $6B pre-money (the round we're discounting from)
 - A subsequent September 2025 Series E added $1B at $7B post-money — but this is **after the case date** and should NOT be used as primary evidence in the decision (only as ex-post validation)
 - Government partnerships: ~$640M from Australia for the Brisbane facility, ~$1B Illinois package (Chicago quantum park), $25M federal grant, DARPA US2QC participation
-- Strategic backers: BlackRock (lead), Founders Fund, Atomico, M12 (Microsoft), Baillie Gifford, Temasek, Blackbird, Australian/Queensland governments
+- Strategic backers: BlackRock (lead of the 2021 Series D at ~$3.15B post-money), Founders Fund, Atomico, M12 (Microsoft), Baillie Gifford, Temasek, Blackbird, Australian/Queensland governments. **Lead investors for the March 2025 and September 2025 rounds are not disclosed in any source we treat as authoritative.**
 - Patents: 230+ filed
 - Strategy: skip NISQ (Noisy Intermediate-Scale Quantum) intermediates entirely; go direct to fault-tolerant utility-scale (~1 million physical qubits)
 - Product roadmap: Brisbane data center 2027, Chicago data center 2028, full utility-scale operations targeted 2029
@@ -103,7 +103,7 @@ Every scenario exit valuation in the dashboard is anchored to one of these. Chan
 | Company | Valuation | Date | Approach | Notes |
 |---|---|---|---|---|
 | Xanadu | $1B | Series C 2022 | Photonic (room-temp) | Smaller photonic peer; "bad case" floor for PsiQuantum |
-| Quantinuum | $10B post | Jan 2024 | Trapped ion | Real revenue, integrated stack, JPMorgan/BMW customers; "okay case" anchor |
+| Quantinuum | $10B post | Jan 2025 | Trapped ion | Real revenue, integrated stack, JPMorgan/BMW customers; "okay case" anchor. The $300M Honeywell-led raise — Quantinuum was at ~$5B in early 2024. |
 | PsiQuantum | $6B pre | Mar 2025 | Photonic | The round we're discounting from |
 | PsiQuantum | $7B post | Sep 2025 | Photonic | Post-case validation only |
 
@@ -220,6 +220,8 @@ When to change: any time the user wants to test sensitivity. The discount sensit
 ### `lastRoundVal` (default: $6,000,000,000)
 
 The pre-money valuation of PsiQuantum's last primary round before the case date. March 2025 Series E was at $6B pre-money per the data room. **Do not change this** — it's a fact, not an assumption.
+
+As of the case date (April 2025), the data room also references a September 2025 raise of $1B at $7B post-money. This is treated as ex-post validation only and is not the default anchor — the March 2025 Series E at $6B pre-money remains the primary anchor for discount calculations. The dashboard exposes a one-click "entry-round anchor" toggle that lets the user swap to the $7B Sep-2025 round to stress-test the recommendation under a more conservative entry; downstream IRR derives automatically.
 
 ### `govFunding` (default: 1.0, in $B)
 
@@ -505,7 +507,7 @@ Doable. The candidate's user preferences mention they program primarily in Spani
 - **Investment Teaser (data room, 9 pages)** — provides PsiQuantum/Quantinuum/Xanadu profiles, valuations, and the "all-or-nothing" framing
 - **McKinsey Quantum Technology Monitor, June 2025** — provides market sizing, competitive roadmaps, and funding landscape
 - **Integra Groupe public materials** — provides investor thesis context (Better Future Fund, Anthropic/Neuralink portfolio per PitchBook)
-- **PsiQuantum public announcements** — Series E March 2025, Brisbane partnership, Chicago site, Omega chipset, DARPA QBI selection
+- **PsiQuantum public announcements** — Series E March 2025, Brisbane partnership, Chicago site, Omega chipset, DARPA US2QC + QBI participation (the data room cites US2QC; QBI is a parallel federal review program)
 
 ### Secondary sources
 
@@ -517,7 +519,8 @@ Doable. The candidate's user preferences mention they program primarily in Spani
 
 - AI-generated market sizing without external citation
 - Analyst estimates from sell-side reports (these tend to be promotional)
-- Anything from the September 2025 Series E or later (post-case timeline)
+- Anything from the September 2025 Series E or later (post-case timeline) as primary evidence — only as ex-post validation
+- Lead-investor attributions for any round other than the 2021 Series D (where BlackRock is named as lead in the data room). The March 2025 and September 2025 round leads are not disclosed in any source we're treating as authoritative.
 
 ---
 
