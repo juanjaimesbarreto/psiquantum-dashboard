@@ -116,26 +116,6 @@ const SCENARIO_COLORS = {
   great: "#2A8A40",  // green — positive
 };
 
-function IntegraLogo({ size = 28, className = "" }) {
-  return (
-    <svg
-      viewBox="0 0 100 100"
-      width={size}
-      height={size}
-      className={className}
-      aria-label="Integra Groupe"
-      role="img"
-    >
-      <g strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <path d="M 30 52 L 14 14 L 52 30" stroke="#7FC8BA" />
-        <path d="M 48 30 L 86 14 L 70 52" stroke="#2A8A40" />
-        <path d="M 30 48 L 14 86 L 52 70" stroke="#1F5A6B" />
-        <path d="M 48 70 L 86 86 L 70 48" stroke="#9BCB42" />
-      </g>
-    </svg>
-  );
-}
-
 /* ---------- Tiny UI primitives ---------- */
 function Slider({ label, value, onChange, min, max, step, format, hint }) {
   return (
@@ -477,9 +457,8 @@ export default function App() {
     >
       <div className="max-w-[1400px] mx-auto px-4 py-6 md:px-8 md:py-10">
         {/* Header */}
-        <header className="mb-8 md:mb-12 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3">
+        <header className="mb-8 md:mb-12">
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 mb-3">
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.3em]"
                 style={{ color: BRAND.inkHeadline }}
@@ -519,18 +498,8 @@ export default function App() {
               Probability-weighted valuation model for the proposed $5M secondary position in
               PsiQuantum. Each scenario exit is anchored to a comparable private-market transaction
               (Xanadu, Quantinuum) or a published market projection (McKinsey QT Monitor). Inputs
-              are adjustable for live sensitivity analysis.
-            </p>
-          </div>
-          <div className="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
-            <IntegraLogo size={48} />
-            <div
-              className="text-[10px] uppercase tracking-[0.18em] font-medium"
-              style={{ color: BRAND.inkSubhead }}
-            >
-              integra <span style={{ color: BRAND.inkFaint, letterSpacing: "0.3em" }}>GROUPE</span>
-            </div>
-          </div>
+            are adjustable for live sensitivity analysis.
+          </p>
         </header>
 
         {/* Top row: Verdict and headline metrics */}
@@ -1065,10 +1034,7 @@ export default function App() {
             className="flex flex-wrap justify-between items-start gap-4 text-[10px] font-mono uppercase tracking-[0.2em]"
             style={{ color: BRAND.inkMuted }}
           >
-            <div className="flex items-center gap-3">
-              <IntegraLogo size={20} />
-              <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
-            </div>
+            <span>Anchors · Xanadu $1B · Quantinuum $10B · McKinsey QT Monitor 2025</span>
             <div className="text-right space-y-1">
               <div className="font-semibold" style={{ color: BRAND.inkHeadline }}>
                 Juan Pablo Jaimes · Investment Analyst
